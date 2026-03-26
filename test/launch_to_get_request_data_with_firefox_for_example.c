@@ -1,5 +1,3 @@
-#include <netinet/in.h>
-#include <netinet/ip.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -7,8 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-
 
 int	main(int argc, char **argv)
 {
@@ -24,11 +20,11 @@ int	main(int argc, char **argv)
 	printf("SOCK_DGRAM = %i\n", SOCK_DGRAM);
 	struct addrinfo *list;
 	struct addrinfo	param;
-	memset(&param, 0, sizeof(param));
 	param.ai_family = AF_INET;
 	param.ai_socktype = 0;
 	param.ai_protocol = 0;
 	param.ai_flags = AI_PASSIVE;
+	memset(&param, 0, sizeof(param));
 	char *port = argv[1];
 	int	a = getaddrinfo(NULL, port, &param, &list);
 	if (a != 0)
@@ -65,7 +61,6 @@ int	main(int argc, char **argv)
 	printf("socket created successfully\n");
 
 	// bind creation :
-	
 	int bfd = bind(fd, tmp->ai_addr, tmp->ai_addrlen);
 	if (bfd != 0)
 	{
@@ -96,6 +91,15 @@ int	main(int argc, char **argv)
 	}
 	printf("received an external connection\n");
 
+	#define BUF_SIZE 1024
+	char buf[BUF_SIZE];
+	int nb_read = read(peer_fd, buf, BUF_SIZE);
+	printf("request_size = %i\n", nb_read);
+	if (read < 0)
+		perror("read");
+	else
+		printf("\nrequest = \n'%.*s'\n", nb_read, buf);
+	/*
 	char *str = "coucou from server";
 	if (write(peer_fd, str, strlen(str)) < 0)
 		perror("write");
@@ -103,10 +107,16 @@ int	main(int argc, char **argv)
 	{
 		printf("client as sent '%s' to peer fd\n", str);
 	}
+	*/
 
 	close(peer_fd);
 	end:
-	sleep(10);
+	for (int i = 10; i > 0; i--)
+	{
+		printf("server stopping in %i seconds\n", i );
+		sleep(1);
+	}
+
 	close(fd);
 	freeaddrinfo(list);
 }
