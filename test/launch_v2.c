@@ -33,11 +33,16 @@ int	main(int argc, char **argv)
 	// and putting it in network order
 	uint32_t tmp_addr;
 	tmp_addr = 0;
+	// uncomment following lines to listen only to 
+	// loop back interface
+	/*
 	tmp_addr = 127 << (8 * 3);
-	tmp_addr += 1;
-	struct in_addr addr;
-	addr.s_addr = htonl(tmp_addr);
-	addr_data.sin_addr = addr;
+	tmp_addr += 2;
+	*/
+	// the following would make the bind call fail,
+	// because not a local address
+	// tmp_addr = (151 << (8 * 3)) + 3;
+	addr_data.sin_addr.s_addr = htonl(tmp_addr);
 
 	// creating a socket that will take
 	// and IPv4 address, and using a SOCK_STREAM,
@@ -95,7 +100,7 @@ int	main(int argc, char **argv)
 
 	printf("the other end sent:\n'%.*s'\n", nb_read, buf);
 
-	sleep(1);
+	sleep(10);
 	close(peer_fd);
 	close(s);
 }
